@@ -35,6 +35,7 @@ dash.register_page(__name__, path='/')
 # downloading data containing all individual stock trades for the running year
 #fname = 'dataDT_daash.csv'
 fname = 'btc_24_cvo.csv'
+fname = 'BTC15m_24.csv'
 df = pd.read_csv(f'../{fname}', parse_dates = ['datetime'], index_col = 'datetime')
 df_l = df.copy()
 df = df[df.index > '01-01-2024']
@@ -84,29 +85,29 @@ layout = html.Div(
                                                 html.H6("Adjust Cutoff to Pause Trading"),
                                                 dcc.Slider(
                                                     id='stop-slider',
-                                                    min=0,
-                                                    max=1.25,
-                                                    step=0.25,
-                                                    value=0.5,
+                                                    min=1,
+                                                    max=5,
+                                                    step=1,
+                                                    value=4,
                                        #             marks={i: str(i) for i in range(0.15, 0.4)},
                                                     ),
                                                 html.Hr(),
                                                 html.H6("Adjust Execution Cost (bps)"),
                                                 dcc.Slider(
                                                     id='cost-slider',
-                                                    min=0,
-                                                    max=0.5,
-                                                    step=0.1,
-                                                    value=0.1,
+                                                    min=0.5,
+                                                    max=3,
+                                                    step=0.5,
+                                                    value=3,
                                                     ), 
  #                                               html.Hr(),
                                                 html.H6("Adjust Slippage"),
                                                 dcc.Slider(
                                                     id='slip-slider',
-                                                    min=0,
-                                                    max=3,
-                                                    step=0.5,
-                                                    value=0.5,
+                                                    min=5,
+                                                    max=25,
+                                                    step=5,
+                                                    value=10,
                                                     ),
                                                  ]),
                                            card_title_img),
@@ -279,16 +280,16 @@ def update_page1(selected_stop, selected_cost, selected_slip, selected_period):
     
     # Redefining df to exclude days on basis of cutt_off selection
     cut_off = selected_stop / 100
-    dfD = df.resample('D').agg({'pnl_best':'sum'})
-    dfD = dfD[dfD.pnl_best != 0]
-    dfD = dfD[dfD.pnl_best.shift(1) > cut_off]
+    dfD = df.resample('D').agg({'pnl':'sum'})
+    dfD = dfD[dfD.pnl != 0]
+    dfD = dfD[dfD.pnl.shift(1) > cut_off]
     
     excluded_dates = dfD.index.normalize()
     dff = df[~df.index.normalize().isin(excluded_dates)]
     
     # Redefine df on basis of cost, slippage and timeperiod
     cost = selected_cost/10000
-    slip = selected_slip/(19000)  # divided by value of 1 nasdaq future 
+    slip = selected_slip/(100000)  # divided by value of 1 nasdaq future 
 
     if selected_period == 'opt1':
         start_hour = 0
@@ -304,7 +305,7 @@ def update_page1(selected_stop, selected_cost, selected_slip, selected_period):
     dfc = dff[(dff.index.hour >= start_hour) & (dff.index.hour <= end_hour)]
     
     dfc['pnl_ac'] = 0
-    dfc['pnl_ac'][dfc.pnl_best != 0] = dfc.pnl_best - cost - slip
+    dfc['pnl_ac'][dfc.pnl != 0] = dfc.pnl - cost - slip
     dfc['cr_ac'] = dfc.pnl_ac.cumsum() + 1
     dfc['pnl_plus'] = dfc.pnl_ac * dfc.cr_ac
     dfc['cr_plus'] = dfc.pnl_plus.cumsum() + 1

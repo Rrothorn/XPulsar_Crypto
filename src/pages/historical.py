@@ -34,8 +34,11 @@ dash.register_page(__name__)
 #fname = 'dataDT_daash.csv'
 fname = 'btc_historical18-23.csv'
 fname = 'btc_18_23_dynstop_vol.csv'
+#fname = 'btc_22_0.1.csv'
 df = pd.read_csv(f'../{fname}', parse_dates = ['datetime'], index_col = 'datetime')
 df = df[df.index > '04-01-2018']
+
+df = df[(df.day_o_week == 0) | (df.day_o_week == 1) | (df.day_o_week == 4)]
 
 
 # unlike on the main page we have selected a close to optimal cutoff pnl of 0.6% on the previous trading day
@@ -54,7 +57,7 @@ dff = df[~df.index.normalize().isin(excluded_dates)]
 
 # unlike on main page we have select realistic cost and slippage
 cost = 0.5/10000
-slip = 5/(60000)  # divided by value of 1 nasdaq future 
+slip = 4/(60000)  # divided by value of 1 nasdaq future 
 dff['pnl_ac'] = 0
 dff['pnl_ac'][dff[pnlcol] != 0] = dff[pnlcol] - cost - slip
 dff['cr_ac'] = dff.pnl_ac.cumsum() + 1
