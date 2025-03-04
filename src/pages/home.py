@@ -36,6 +36,8 @@ dash.register_page(__name__, path='/')
 #fname = 'dataDT_daash.csv'
 fname = 'btc_24_cvo.csv'
 fname = 'BTC15m_24.csv'
+fname = 'BTC15_y24.csv'
+fname = 'btc_15_1y.csv'
 df = pd.read_csv(f'../{fname}', parse_dates = ['datetime'], index_col = 'datetime')
 df_l = df.copy()
 df = df[df.index > '01-01-2024']
@@ -88,7 +90,7 @@ layout = html.Div(
                                                     min=1,
                                                     max=5,
                                                     step=1,
-                                                    value=4,
+                                                    value=3,
                                        #             marks={i: str(i) for i in range(0.15, 0.4)},
                                                     ),
                                                 html.Hr(),
@@ -321,9 +323,9 @@ def update_page1(selected_stop, selected_cost, selected_slip, selected_period):
     avgtr = hl.AvgTrades(dfc)
     sharpe = hl.Sharpe(dfc.pnl_plus)
     pr = hl.ProfitRatio(dfc.pnl_plus)
-    dd = hl.DrawDown(dfc.pnl_plus)
-    bestday = hl.MaxWinDay(dfc.pnl_plus)
-    worstday = hl.MaxLossDay(dfc.pnl_plus)
+    dd = hl.DrawDown(dfc.pnl_ac)
+    bestday = hl.MaxWinDay(dfc.pnl_ac)
+    worstday = hl.MaxLossDay(dfc.pnl_ac)
     
     bars = hl.generate_weekly_bars(dfc)
     bars2 = hl.generate_last20days(dfc)
