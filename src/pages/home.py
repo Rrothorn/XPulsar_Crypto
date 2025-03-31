@@ -34,13 +34,11 @@ dash.register_page(__name__, path='/')
 
 # downloading data containing all individual stock trades for the running year
 #fname = 'dataDT_daash.csv'
-fname = 'btc_24_cvo.csv'
-fname = 'BTC15m_24.csv'
-fname = 'BTC15_y24.csv'
-fname = 'btc_15_1y.csv'
+
+fname = 'BTC_2025.csv'
 df = pd.read_csv(f'../{fname}', parse_dates = ['datetime'], index_col = 'datetime')
 df_l = df.copy()
-df = df[df.index > '01-01-2024']
+df = df[df.index > '01-01-2025']
 
 
 
