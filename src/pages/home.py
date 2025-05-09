@@ -312,7 +312,7 @@ def update_page1(selected_stop, selected_cost, selected_slip, selected_period):
 
     
     # Generate interactive graphs and card values.
-    figln = hl.generate_line_shaded(dfc, '2024')  
+    figln = hl.generate_line_shaded(dfc, '2025')  
   
     performance = hl.Performance(dfc.pnl_plus)
     wr = hl.WinRate(dfc.pnl_plus)
